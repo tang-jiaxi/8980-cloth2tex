@@ -1,0 +1,32 @@
+# Python environment
+.venv/
+**/__pycache__/
+*.py[cod]
+*.pkl
+
+# Ignore user upload and results 
+uploads/*
+!uploads/sample/
+experiments/*
+!experiments/20231017_jk/
+!experiments/20231017_trousers/
+!experiments/20231017_wy/
+
+# Ignore md images
+imgs/*
+!imgs/11_skirt/
+
+# Ignore external packages
+psbody-mesh/
+pytorch3d/
+*.deb
+
+# Misc
+*.log
+.DS_Store
+*.so
+*.egg-info/
+dist/
+build/
+instance/
+.env
