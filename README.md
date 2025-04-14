@@ -79,15 +79,20 @@ Customizable command flags in `server.py`
 * `--steps_one`: higher number = more detailed shape
 * `--steps_two`: higher number = more detailed texture
 ## 1. Sending a request from Unity
-1. Click UploadDesign game object
-2. Specify image file paths
-3. Right click `Cloth Texture Uploader` script header > `Upload and Apply Texture`  
-On success, the Unity terminal will show `Applying texture...`
-## 2. Server receives the request and runs the inference command to send back a texture
-Raw files uploaded from Unity are stored in `/uploads/[session_time]` folder  
-Results are stored in `experiments/[session_time]` folder  
+1. Click UploadDesign game object and populate input fields
+2. Click 'Generate Texture' button OR right-click `Cloth Texture Uploader` script header for context menu > `Upload and Apply Texture` to send
+3. On success, Unity receives the `session_id` back and stores it in PlayerPreferences.
+4. While in play mode, Unity polls `/status/<session_id>` for the generated texture 
+## 2. Server receives the request and runs it through the model to send back a texture
+1. Server immediately sends back the generated `session_id` to Unity (^step 1.3)
+2. Server runs the model in the background and updates `/status/<session_id>` endpoint when it's done
+* Raw files uploaded from Unity are stored in `/uploads/<session_id>` folder
+* Results are stored in `experiments/[session_time]` folder
+* Step1 in the training process will be skipped if the mesh has been cached before
 ## 3. Receiving the texture back in Unity
-TBC
+1. When Unity receives the success status, it accesses the `/results/<session_id>` to download the texture file
+2. Unity applies the texture to all materials in its mesh
+3. On success, Unity deletes the stored `session_id` key in PlayerPreferences
 
 # Potential Bugs
 ## Cannot open shared object file
