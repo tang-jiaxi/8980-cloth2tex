@@ -125,12 +125,11 @@ class Trainer(object):
                                    lr_rate=1e-2,
                                    savedir=self.savedir)
         print("Finish Graph Creation !!!")
-    
+
     def load_cached_mesh(self, path="template/skirt_cached/final_verts.pt"):
         print("📦 Loading cached skirt mesh from:", path)
-        verts = torch.load(path).to(self.device)
-        self.cloth_renderer.verts = verts
-        print("✅ Skirt verts loaded and set.")    
+        cached_verts = torch.load(path).to(self.device)
+        self.cloth_renderer.verts = cached_verts
         
     def iterative_mesh(self,
                        garment_type,
@@ -201,6 +200,15 @@ class Trainer(object):
                                                        times=times)
         print("deformation graph finish!")
         self.cloth_renderer.verts = final_vertices.detach()
+
+        if garment_type == "11_skirt":
+            cache_path = "template/skirt_cached/final_verts.pt"
+            if not os.path.exists(cache_path):
+                os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+                torch.save(final_vertices.detach().cpu(), cache_path)
+                print(f"💾 Saved final skirt verts to {cache_path}")
+            else:
+                print(f"📂 Skirt cache already exists at {cache_path}, skipping save.")
         
     def iterative_optimize(self,
                            garment_mask,
@@ -412,6 +420,7 @@ def main(category,
                     std_lst_front.append("mn")
                     print("[mn] appending success!")
                     break
+        
 
         inputs = img_transform(ref_img).unsqueeze(0)
         inputs_back = img_transform(ref_img_back).unsqueeze(0)
@@ -425,16 +434,13 @@ def main(category,
         mask_front, mask_back = mask_front / 255., mask_back / 255.
         
         # optimize
-        if category == "11_skirt" and os.path.exists("template/skirt_cached/final_verts.pt"):
-            trainer.load_cached_mesh()
-        else:
-            trainer.iterative_mesh(category,
-                                    idx,
-                                    [std_lst_front, std_lst_back],
-                                    vertex_number_dict[category],
-                                    [mask_front, mask_back],
-                                    [c_src_front, c_src_back],
-                                    times=steps_one)
+        trainer.iterative_mesh(category,
+                               idx,
+                               [std_lst_front, std_lst_back],
+                               vertex_number_dict[category],
+                               [mask_front, mask_back],
+                               [c_src_front, c_src_back],
+                               times=steps_one)
 
         trainer.iterative_optimize(garment_mask,
                                    idx,
