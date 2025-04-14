@@ -1,4 +1,4 @@
-# Set-up and Environment
+# Setup and Environment
 * WSL2 Ubuntu x86_64
 * Python 3.8
 ## 1. Set up virtual environment
@@ -23,7 +23,7 @@ sudo apt-get install libboost-dev
 ```
 wheels take a lot longer to download
 ```
-pip install -r requirements.txt #you're welcome for this crying 
+pip install -r requirements.txt 
 pip install torch_geometric
 pip install pyg_lib-0.3.0+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch_cluster-1.6.1+pt113cu117-cp38-cp38-linux_x86_64.whl
@@ -94,7 +94,7 @@ Customizable command flags in `server.py`
 2. Unity applies the texture to all materials in its mesh
 3. On success, Unity deletes the stored `session_id` key in PlayerPreferences
 
-# Potential Bugs
+# Potential Setup Bugs
 ## Cannot open shared object file
 * Run `nano ~/.bashrc`
 * Add this line `export LD_LIBRARY_PATH=/usr/lib/wsl/lib:$LD_LIBRARY_PATH` to your bash file
@@ -121,18 +121,17 @@ ls -l /usr/lib/wsl/lib/libcuda.so
 python -c "import ctypes; ctypes.CDLL('libcuda.so')"
 #if nothing is printed, means this file is sucessfully linked and usable
 ```
-## Some cloned library is editable
-Don't use `-e` flag when installing with `pip`, try `pip install .` or `pip install --no-editable flag`
-  
-# Debugging
-## Can my PyTorch see my GPU?
+## Accidentally made clone library editable
+`pip uninstall <package>` and make sure to not use `-e` flag when installing with `pip`, do `pip install .`
+ 
+## Verify if torch is using GPU
 ```
 python -c "import torch; print(torch.cuda.is_available())"
 #should print True
 python -c "import torch; print(torch.cuda.device_count()); print(torch.cuda.get_device_name(0))"
 #should print your GPU name 
 ```
-## Verify Nvida driver installation
+## Verify Nvida driver doesn't have GPU passthrough issues 
 Shouldn't need to install Nvida drivers inside WSL (cudaTool handles it), only install it in Windows if needed
 ```
 nvidia-smi
