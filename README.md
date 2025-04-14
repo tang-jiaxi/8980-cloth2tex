@@ -29,15 +29,15 @@ pip install pyg_lib-0.3.0+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch_cluster-1.6.1+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch_scatter-2.1.1+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch_sparse-0.6.15+pt113cu117-cp38-cp38-linux_x86_64.whl
+pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
 ```
 ## 4. Clone repos 
 The shorter installation instructions didn't work for me so I cloned the repos locally but you can try those first
 ### pytorch3D 
-* Very important!! Must have these versions (is in requirement.txt already) before installing
+* Must have these corresponding versions before installing (nvidia gpu has to support cuda)
   * `torch==1.13.1+cu117`
   * `torchaudio==0.13.1+cu117`
-  * `torchvision==0.14.1+cu117` <br>
-^cu117 is for nvida drivers, need to download something else if not cuda but idk if it will work
+  * `torchvision==0.14.1+cu117` 
 ```
 #for simplicity just clone it in the same directory
 git clone https://github.com/facebookresearch/pytorch3d.git
