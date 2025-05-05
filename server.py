@@ -12,6 +12,10 @@ TEXTURE_FILE = "0_texture_uv_400.jpg"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+@app.route("/")
+def home():
+    return "Flask server is up!"
+
 @app.route("/generate_texture", methods=["POST"])
 def generate_texture():
     
@@ -64,6 +68,51 @@ def generate_texture():
 
     # Send back session ID immediately
     print(f"📂 Session created: {session_id}")
+    return {"status": "started", "session": session_id}, 202
+
+@app.route("/generate_texture_demo", methods=["POST", "GET"])
+def generate_texture_demo():
+    print("🧪 Running demo texture generation")
+
+    # Hardcoded paths for demo images
+    garment_id = "11_skirt"
+    demo_front = os.path.join("imgs", "demo", "front.jpg")
+    demo_back = os.path.join("imgs", "demo", "back.jpg")
+
+    if not os.path.exists(demo_front) or not os.path.exists(demo_back):
+        return "❌ Demo images not found", 404
+
+    # Create session info
+    session_id = datetime.now().strftime("demo_%m%d_%H%M%S")
+    input_dir = os.path.join(UPLOAD_FOLDER, session_id)
+    os.makedirs(input_dir, exist_ok=True)
+    scale = "1.0"
+    steps_one = "51"
+    steps_two = "401"
+
+    # Copy demo images into input and cloth2tex folders
+    front_path = os.path.join(input_dir, "front.jpg")
+    back_path = os.path.join(input_dir, "back.jpg")
+    shutil.copy(demo_front, front_path)
+    shutil.copy(demo_back, back_path)
+
+    cloth_input_dir = os.path.join("imgs", garment_id, session_id)
+    os.makedirs(cloth_input_dir, exist_ok=True)
+    shutil.copy(front_path, os.path.join(cloth_input_dir, "front.jpg"))
+    shutil.copy(back_path, os.path.join(cloth_input_dir, "back.jpg"))
+
+    # Kick off inference
+    command = [
+        sys.executable, "phase1_inference.py",
+        "--g", garment_id,
+        "--s", scale,
+        "--d", session_id,
+        "--steps_one", steps_one,
+        "--steps_two", steps_two
+    ]
+    subprocess.Popen(command, stdout=None, stderr=None)
+
+    print(f"🧪 Demo session created: {session_id}")
     return {"status": "started", "session": session_id}, 202
 
 @app.route("/status/<session_id>")

@@ -14,7 +14,7 @@ experiments/*
 
 # Ignore md images
 imgs/*
-!imgs/11_skirt/
+!imgs/demo/
 
 # Ignore external packages
 psbody-mesh/

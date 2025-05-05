@@ -7,6 +7,18 @@ Install packages to be contained in this environment
 python3.8 -m venv .venv
 source .venv/bin/activate
 ```
+If the computer doesn't have python
+```
+wget https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tgz
+tar -xzf Python-3.8.18.tgz
+cd Python-3.8.18
+mkdir -p ~/.local/python38
+./configure --prefix=$HOME/.local/python38 --enable-optimization
+export PATH="$HOME/.local/python38/bin:$PATH"
+source ~/.bashrc 
+```
+Verify you have python 3.8 installed `python3.8 --version`
+
 ## 2. Download external packages
 [Nvida cudaTools 11.7.0](https://developer.nvidia.com/cuda-11-7-0-download-archive)  
 Linux x86_64 WSL-Ubuntu 2.0 deb(local)  
@@ -21,19 +33,24 @@ sudo apt-get update -y
 sudo apt-get install libgl1
 sudo apt-get install libboost-dev
 ```
-wheels take a lot longer to download
+Wheels take a lot longer to download. Wheels can be deleted after they are installed.
 ```
 pip install -r requirements.txt 
 pip install torch_geometric
+wget https://data.pyg.org/whl/torch-1.13.0+cu117/pyg_lib-0.3.0%2Bpt113cu117-cp38-cp38-linux_x86_64.whl -O pyg_lib-0.3.0+pt113cu117-cp38-cp38-linux_x86_64.whl
+wget https://data.pyg.org/whl/torch-1.13.0+cu117/torch_scatter-2.1.1%2Bpt113cu117-cp38-cp38-linux_x86_64.whl -O torch_scatter-2.1.1+pt113cu117-cp38-cp38-linux_x86_64.whl
+wget https://data.pyg.org/whl/torch-1.13.0+cu117/torch_sparse-0.6.15%2Bpt113cu117-cp38-cp38-linux_x86_64.whl -O torch_sparse-0.6.15+pt113cu117-cp38-cp38-linux_x86_64.whl
+wget https://data.pyg.org/whl/torch-1.13.0+cu117/torch_cluster-1.6.1%2Bpt113cu117-cp38-cp38-linux_x86_64.whl -O torch_cluster-1.6.1+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install pyg_lib-0.3.0+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch_cluster-1.6.1+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch_scatter-2.1.1+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch_sparse-0.6.15+pt113cu117-cp38-cp38-linux_x86_64.whl
 pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+pip install pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py38_cu117_pyt1131/download.html
+pip install git+https://github.com/MPI-IS/mesh.git
 ```
-## 4. Clone repos 
-The shorter installation instructions didn't work for me so I cloned the repos locally but you can try those first
-### pytorch3D 
+### If you need to install from source
+#### pytorch3D 
 * Must have these corresponding versions before installing (nvidia gpu has to support cuda)
   * `torch==1.13.1+cu117`
   * `torchaudio==0.13.1+cu117`
@@ -49,9 +66,10 @@ Verify installation
 python -c "from pytorch3d.structures import Meshes"
 #shouldnt print anything
 ```
-### psbody-mesh
+#### psbody-mesh
 ```
 git clone https://github.com/MPI-IS/mesh.git
+cd mesh
 pip install . 
 ```
 Verify installation
